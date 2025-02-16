@@ -52,7 +52,7 @@ export default function MyBooksScreen() {
 
 
         favoritesData.push({
-          id: favData.id,
+          id: favDoc.id,
           ...favData,
           total: totalFav,
           promedio: (totalSum/totalFav).toFixed(1),
@@ -101,15 +101,22 @@ export default function MyBooksScreen() {
   };
 
   const handleRating = async () => {
-    if (selectedFavorite) {
-      const bookRef = doc(db, 'favorites', selectedFavorite.id);
-      await setDoc(bookRef, {rating, review}, {merge: true});
-      setFavorites(favorites.map(favorite => favorite.id === selectedFavorite.id ? {
-        ...favorite,
-        rating,
-        review
-      } : favorite));
-      setModalVisible(false);
+    setLoading(true)
+    try {
+      if (selectedFavorite) {
+        const bookRef = doc(db, 'favorites', selectedFavorite.id);
+        await setDoc(bookRef, {rating, review}, {merge: true});
+        setFavorites(favorites.map(favorite => favorite.id === selectedFavorite.id ? {
+          ...favorite,
+          rating,
+          review
+        } : favorite));
+        setModalVisible(false);
+      }
+    } catch (error) {
+      console.error('Error al grabar:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
