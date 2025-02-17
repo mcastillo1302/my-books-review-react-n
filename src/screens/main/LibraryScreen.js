@@ -78,6 +78,7 @@ export default function LibraryScreen() {
   const searchBooks = async () => {
     if (!searchQuery.trim()) {
       setBooks([]);
+      setFilteredBooks([]);
       return;
     }
     setLoading(true);
@@ -127,9 +128,9 @@ export default function LibraryScreen() {
 
   const onChangeSearch = (query) => {
     setSearchQuery(query);
-    if (query === '') {
-      setBooks([]); // Limpiar resultados si el campo está vacío
-    }
+    // if (query === '') {
+    //   setBooks([]); // Limpiar resultados si el campo está vacío
+    // }
   };
 
   const openModal = async (book) => {
@@ -164,6 +165,7 @@ export default function LibraryScreen() {
     }
 
     setFilters(updatedFilters);
+    console.log("Books: "+books.length)
     applyFilters(updatedFilters, books); // Aplicar los nuevos filtros a los libros actuales
   };
 
