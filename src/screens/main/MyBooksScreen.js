@@ -24,7 +24,6 @@ export default function MyBooksScreen() {
 
   // Función para cargar los favoritos
   const loadFavorites = async () => {
-    setFavorites([]);
     setLoading(true);
     try {
       const favoritesRef = collection(db, 'favorites');
@@ -67,6 +66,7 @@ export default function MyBooksScreen() {
       setFavorites(favoritesData);
 
     } catch (error) {
+      setFavorites([]);
       console.error('Error cargando favoritos:', error);
     } finally {
       setLoading(false);
@@ -111,6 +111,7 @@ export default function MyBooksScreen() {
           rating,
           review
         } : favorite));
+        await loadFavorites();
         setModalVisible(false);
       }
     } catch (error) {
