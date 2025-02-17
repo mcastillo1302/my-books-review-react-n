@@ -40,21 +40,25 @@ export default function MyBooksScreen() {
         const q = query(favoritesRef, where('bookId', '==', favData.bookId));
         const querySnapshot = await getDocs(q);
 
-        const totalFav = querySnapshot.docs.length
-        console.log(querySnapshot.docs.length);
+        console.log("ANTES> "+querySnapshot.docs.length);
+        //const totalFav = querySnapshot.docs.length
+        const totalFav = querySnapshot.docs.filter(doc => doc.data().review && doc.data().rating);
+        console.log("DESPUES> "+totalFav.length);
 
-        const totalSum = querySnapshot.docs.reduce((accumulator, doc) => {
+        const totalSum = totalFav.reduce((accumulator, doc) => {
           return accumulator + (doc.data().rating||0);
         }, 0);
 
-        console.log(totalSum);
+        console.log("TOTAL: "+totalSum);
+        console.log("RES: "+(totalFav.length===0?0:totalSum/totalFav.length));
 
 
         favoritesData.push({
           id: favDoc.id,
           ...favData,
-          total: totalFav,
-          promedio: (totalSum/totalFav).toFixed(1),
+          total: totalFav.length,
+          promedio: (totalFav.length===0?0:totalSum/totalFav.length).toFixed(1),
+
         });
       }
 
@@ -138,14 +142,16 @@ export default function MyBooksScreen() {
         const userDoc = await getDoc(userRef);
         const userData = userDoc.data();
 
-        favsData.push({
-          //...favData,
-          id: favData.id,
-          rating: favData.rating,
-          review: favData.review,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-        });
+        if(favData.rating) {
+          favsData.push({
+            //...favData,
+            id: favData.id,
+            rating: favData.rating,
+            review: favData.review,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+          });
+        }
       }
       setFavoritesBook(favsData);
       setModalReview(true)
@@ -190,15 +196,17 @@ export default function MyBooksScreen() {
                             isDisabled={true}
                             fractions={1}
                         />
+                        {favorite.total !== 0 && (
                         <TouchableOpacity style={styles.calificarLink}
                                           onPress={() => handleReview(favorite.bookId)}>
                           <Text style={styles.calificaTextLink}>({favorite.total})</Text>
                         </TouchableOpacity>
+                        )}
                       </View>
                       <View style={{flexDirection: 'row'}}>
                         <TouchableOpacity style={styles.calificarLink}
                                           onPress={() => openModal(favorite)}>
-                          <Text style={styles.calificaTextLink}>Calificar</Text>
+                          <Text style={styles.calificaTextLink}>{favorite.rating ? 'Editar':'Calificar' }</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => {
@@ -276,7 +284,7 @@ export default function MyBooksScreen() {
                   />
                   <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 20}}>
                     <Button onPress={() => setModalVisible(false)}>Cancelar</Button>
-                    <Button onPress={handleRating}>Guardar</Button>
+                    <Button onPress={handleRating} disabled={!rating && !review}>Guardar</Button>
                   </View>
                 </View>
               </View>
