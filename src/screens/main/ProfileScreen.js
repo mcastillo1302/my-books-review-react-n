@@ -103,6 +103,9 @@ export default function ProfileScreen() {
                 source={image ? { uri: image } : require('../../../assets/default-profile.png')}
                 style={styles.image}
             />
+            <View style={{justifyContent: 'center', alignItems: 'center', paddingBottom: 15}}>
+                <Text style={styles.title}>{auth.currentUser.email}</Text>
+            </View>
             <Input
                 placeholder="Nombre"
                 value={firstName}
@@ -157,6 +160,11 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 100,
         alignSelf: 'center',
-        marginBottom: 20,
+        marginBottom: 10,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 5,
     },
 });
